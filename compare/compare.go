@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"log"
+	"strings"
 )
 
 func compareContracts() {
@@ -69,4 +70,63 @@ func compareAccountNonces() {
 	})
 
 	log.Printf("Account nonces checked - OK: %d, errors: %d", countOk, countErr)
+}
+
+// compareErc20Name not used - too much
+func compareErc20Name() {
+	countOk, countErr, countSkipped := 0, 0, 0
+
+	log.Printf("Checking ERC-20 name...")
+	readFileRows("data/erc20.csv", func (row string) {
+		address := common.HexToAddress(row)
+
+		nonce1, err1 := rpc1.Erc20Name(address)
+		nonce2, err2 := rpc2.Erc20Name(address)
+
+		if err1 != nil && err2 != nil {
+			log.Printf("Skip %s: %s / %s", address, err1, err2)
+			countSkipped++
+			return // failed on both servers
+		}
+
+		if nonce1 != nonce2 {
+			log.Printf("ERC-20 name different for %s:\nRPC1: %s\nRPC2: %s", address, nonce1, nonce2)
+			countErr++
+		} else {
+			//log.Printf("%s OK (%d)", address, len(code1))
+			countOk++
+		}
+	})
+
+	log.Printf("ERC-20 name checked - OK: %d, skipped: %d, errors: %d", countOk, countSkipped, countErr)
+}
+
+func compareErc20Balance() {
+	countOk, countErr, countSkipped := 0, 0, 0
+
+	log.Printf("Checking ERC-20 balances...")
+	readFileRows("data/erc20disp.csv", func (row string) {
+		rowParts := strings.Split(row, ",")
+		token := common.HexToAddress(rowParts[0])
+		owner := common.HexToAddress(rowParts[1])
+
+		balance1, err1 := rpc1.Erc20BalanceOf(token, owner)
+		balance2, err2 := rpc2.Erc20BalanceOf(token, owner)
+
+		if err1 != nil && err2 != nil {
+			log.Printf("Skip %s/%s: %s / %s", token, owner, err1, err2)
+			countSkipped++
+			return // failed on both servers
+		}
+
+		if balance1.String() != balance2.String() {
+			log.Printf("ERC-20 balance different for %s/%s:\nRPC1: %s\nRPC2: %s", token, owner, balance1.String(), balance2.String())
+			countErr++
+		} else {
+			//log.Printf("%s/%s OK (%s)", token, owner, balance1.String())
+			countOk++
+		}
+	})
+
+	log.Printf("ERC-20 balances checked - OK: %d, skipped: %d, errors: %d", countOk, countSkipped, countErr)
 }

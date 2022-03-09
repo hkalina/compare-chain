@@ -14,6 +14,7 @@ func main() {
 	compareContracts()
 	compareAccountBalances()
 	compareAccountNonces()
+	compareErc20Name()
+	compareErc20Balance()
 	fmt.Println("Done")
 }
-
