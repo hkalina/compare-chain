@@ -26,6 +26,7 @@ func compareContracts() {
 	})
 
 	log.Printf("Contracts checked - OK: %d, errors: %d", countOk, countErr)
+	totalErrors += int64(countErr)
 }
 
 func compareAccountBalances() {
@@ -48,6 +49,7 @@ func compareAccountBalances() {
 	})
 
 	log.Printf("Account balances checked - OK: %d, errors: %d", countOk, countErr)
+	totalErrors += int64(countErr)
 }
 
 func compareAccountNonces() {
@@ -70,6 +72,7 @@ func compareAccountNonces() {
 	})
 
 	log.Printf("Account nonces checked - OK: %d, errors: %d", countOk, countErr)
+	totalErrors += int64(countErr)
 }
 
 // compareErc20Name not used - too much
@@ -99,6 +102,7 @@ func compareErc20Name() {
 	})
 
 	log.Printf("ERC-20 name checked - OK: %d, skipped: %d, errors: %d", countOk, countSkipped, countErr)
+	totalErrors += int64(countErr)
 }
 
 func compareErc20Balance() {
@@ -129,4 +133,5 @@ func compareErc20Balance() {
 	})
 
 	log.Printf("ERC-20 balances checked - OK: %d, skipped: %d, errors: %d", countOk, countSkipped, countErr)
+	totalErrors += int64(countErr)
 }
