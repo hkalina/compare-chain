@@ -11,10 +11,11 @@ var rpc1 *FtmBridge
 var rpc2 *FtmBridge
 var totalErrors int64
 var block big.Int
+var skipRows int64
 
 func main() {
-	if len(os.Args) != 5 {
-		fmt.Printf("Usage: %s [all/contracts/balances/nonces/ercnames/ercbalances] [blockNumber] http://rpc1/ http://rpc2/\n", os.Args[0])
+	if len(os.Args) != 5 && len(os.Args) != 6 {
+		fmt.Printf("Usage: %s [all/contracts/balances/nonces/ercnames/ercbalances] [blockNumber] http://rpc1/ http://rpc2/ [skipRowsCount]\n", os.Args[0])
 		return
 	}
 
@@ -24,6 +25,12 @@ func main() {
 	rpc2 = NewFtmBridge(os.Args[4])
 	defer rpc1.Close()
 	defer rpc2.Close()
+	if len(os.Args) == 6 {
+		_, err := fmt.Sscan(os.Args[5], &skipRows)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	if task == "contracts" || task == "all" {
 		compareContracts()
