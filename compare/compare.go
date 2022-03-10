@@ -20,12 +20,14 @@ func compareContracts() {
 			log.Printf("Code different for %s:\nRPC1: %s\nRPC2: %s", address, code1, code2)
 			countErr++
 		} else {
-			//log.Printf("%s OK (%d)", address, len(code1))
+			if countOk % 100 == 0 {
+				log.Printf("Contracts codes - OK: %d, errors: %d", countOk, countErr)
+			}
 			countOk++
 		}
 	})
 
-	log.Printf("Contracts checked - OK: %d, errors: %d", countOk, countErr)
+	log.Printf("Contracts codes - OK: %d, errors: %d", countOk, countErr)
 	totalErrors += int64(countErr)
 }
 
@@ -43,7 +45,9 @@ func compareAccountBalances() {
 			log.Printf("Balance different for %s:\nRPC1: %s\nRPC2: %s", address, balance1, balance2)
 			countErr++
 		} else {
-			//log.Printf("%s OK (%d)", address, len(code1))
+			if countOk % 100 == 0 {
+				log.Printf("Account balances - OK: %d, errors: %d", countOk, countErr)
+			}
 			countOk++
 		}
 	})
@@ -66,7 +70,9 @@ func compareAccountNonces() {
 			log.Printf("Nonce different for %s:\nRPC1: %s\nRPC2: %s", address, nonce1, nonce2)
 			countErr++
 		} else {
-			//log.Printf("%s OK (%d)", address, len(code1))
+			if countOk % 100 == 0 {
+				log.Printf("Account nonces - OK: %d, errors: %d", countOk, countErr)
+			}
 			countOk++
 		}
 	})
@@ -96,7 +102,9 @@ func compareErc20Name() {
 			log.Printf("ERC-20 name different for %s:\nRPC1: %s\nRPC2: %s", address, nonce1, nonce2)
 			countErr++
 		} else {
-			//log.Printf("%s OK (%d)", address, len(code1))
+			if countOk % 100 == 0 {
+				log.Printf("ERC-20 names - OK: %d, errors: %d", countOk, countErr)
+			}
 			countOk++
 		}
 	})
@@ -127,7 +135,9 @@ func compareErc20Balance() {
 			log.Printf("ERC-20 balance different for %s/%s:\nRPC1: %s\nRPC2: %s", token, owner, balance1.String(), balance2.String())
 			countErr++
 		} else {
-			//log.Printf("%s/%s OK (%s)", token, owner, balance1.String())
+			if countOk % 100 == 0 {
+				log.Printf("ERC-20 balances - OK: %d, errors: %d", countOk, countErr)
+			}
 			countOk++
 		}
 	})
