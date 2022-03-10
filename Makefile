@@ -2,7 +2,7 @@ buildcompare:
 	go build -o build/compare compare-chain/compare
 
 test:
-	build/compare all http://xapi113.fantom.network/ http://xapi113.fantom.network/
+	build/compare all 8333828 http://xapi113.fantom.network/ http://xapi113.fantom.network/
 
 data/contract.csv:
 	mongoexport --db=testnet --collection=contract --fields=_id --type=csv --out=data/contract.csv

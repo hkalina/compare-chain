@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"log"
 	"strings"
 )
@@ -13,8 +14,8 @@ func compareContracts() {
 	readFileRows("data/contract.csv", func (row string) {
 		address := common.HexToAddress(row)
 
-		code1 := rpc1.GetCode(address)
-		code2 := rpc2.GetCode(address)
+		code1 := rpc1.GetCode(address, hexutil.Big(block))
+		code2 := rpc2.GetCode(address, hexutil.Big(block))
 
 		if code1 != code2 {
 			log.Printf("Code different for %s:\nRPC1: %s\nRPC2: %s", address, code1, code2)
@@ -38,8 +39,8 @@ func compareAccountBalances() {
 	readFileRows("data/account.csv", func (row string) {
 		address := common.HexToAddress(row)
 
-		balance1 := rpc1.GetBalance(address)
-		balance2 := rpc2.GetBalance(address)
+		balance1 := rpc1.GetBalance(address, hexutil.Big(block))
+		balance2 := rpc2.GetBalance(address, hexutil.Big(block))
 
 		if balance1 != balance2 {
 			log.Printf("Balance different for %s:\nRPC1: %s\nRPC2: %s", address, balance1, balance2)
@@ -63,8 +64,8 @@ func compareAccountNonces() {
 	readFileRows("data/account.csv", func (row string) {
 		address := common.HexToAddress(row)
 
-		nonce1 := rpc1.GetNonce(address)
-		nonce2 := rpc2.GetNonce(address)
+		nonce1 := rpc1.GetNonce(address, hexutil.Big(block))
+		nonce2 := rpc2.GetNonce(address, hexutil.Big(block))
 
 		if nonce1 != nonce2 {
 			log.Printf("Nonce different for %s:\nRPC1: %s\nRPC2: %s", address, nonce1, nonce2)
@@ -89,8 +90,8 @@ func compareErc20Name() {
 	readFileRows("data/erc20.csv", func (row string) {
 		address := common.HexToAddress(row)
 
-		nonce1, err1 := rpc1.Erc20Name(address)
-		nonce2, err2 := rpc2.Erc20Name(address)
+		nonce1, err1 := rpc1.Erc20Name(address, block)
+		nonce2, err2 := rpc2.Erc20Name(address, block)
 
 		if err1 != nil && err2 != nil {
 			log.Printf("Skip %s: %s / %s", address, err1, err2)
@@ -122,8 +123,8 @@ func compareErc20Balance() {
 		token := common.HexToAddress(rowParts[0])
 		owner := common.HexToAddress(rowParts[1])
 
-		balance1, err1 := rpc1.Erc20BalanceOf(token, owner)
-		balance2, err2 := rpc2.Erc20BalanceOf(token, owner)
+		balance1, err1 := rpc1.Erc20BalanceOf(token, owner, block)
+		balance2, err2 := rpc2.Erc20BalanceOf(token, owner, block)
 
 		if err1 != nil && err2 != nil {
 			log.Printf("Skip %s/%s: %s / %s", token, owner, err1, err2)

@@ -3,22 +3,25 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/big"
 	"os"
 )
 
 var rpc1 *FtmBridge
 var rpc2 *FtmBridge
 var totalErrors int64
+var block big.Int
 
 func main() {
-	if len(os.Args) != 4 {
-		fmt.Printf("Usage: %s [all/contracts/balances/nonces/ercnames/ercbalances] http://rpc1/ http://rpc2/\n", os.Args[0])
+	if len(os.Args) != 5 {
+		fmt.Printf("Usage: %s [all/contracts/balances/nonces/ercnames/ercbalances] [blockNumber] http://rpc1/ http://rpc2/\n", os.Args[0])
 		return
 	}
 
 	task := os.Args[1]
-	rpc1 = NewFtmBridge(os.Args[2])
-	rpc2 = NewFtmBridge(os.Args[3])
+	block.SetString(os.Args[2], 10)
+	rpc1 = NewFtmBridge(os.Args[3])
+	rpc2 = NewFtmBridge(os.Args[4])
 	defer rpc1.Close()
 	defer rpc2.Close()
 
