@@ -1,11 +1,48 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"log"
 	"strings"
 )
+
+func generateBalances() {
+	processed := 0
+	skippedZero := 0
+	failed := 0
+	fmt.Printf("[\n")
+	readFileRows("data/account.csv", func (row string) {
+		address := common.HexToAddress(row)
+
+		balance := rpc1.GetBalance(address, hexutil.Big(block))
+		if balance == "" {
+			failed++
+			log.Printf("Skipping failed %s\n", address.Hex())
+			return
+		}
+		balanceInt := hexutil.MustDecodeBig(balance)
+
+		if balanceInt.Int64() == 0 {
+			skippedZero++
+			return
+		}
+
+		fmt.Printf(" {\n")
+		fmt.Printf("  \"account_identifier\": { \"address\": \"%s\" },\n", address.Hex())
+		fmt.Printf("  \"currency\": { \"symbol\": \"FTM\", \"decimals\": 18 },\n")
+		fmt.Printf("  \"value\": \"%s\"\n", balanceInt.String())
+		fmt.Printf(" },\n")
+
+		processed++
+		if (processed + skippedZero + failed) % 100 == 0 {
+			log.Printf("Processed %d, skipped because zero %d, failed %d\n", processed, skippedZero, failed)
+		}
+	})
+	fmt.Printf("]\n")
+	log.Printf("Processed %d, skipped because zero %d, failed %d\n", processed, skippedZero, failed)
+}
 
 func compareContracts() {
 	countOk, countErr := 0, 0
