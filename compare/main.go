@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"math/big"
-	"os"
+	"strings"
 )
 
 var rpc1 *FtmBridge
@@ -13,14 +17,24 @@ var block big.Int
 var skipRows int64
 
 func main() {
-	if len(os.Args) != 3 {
-		fmt.Printf("Usage: %s [blockNumber] http://rpc1/\n", os.Args[0])
+
+	sess := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("eu-central-1"),
+		Credentials: credentials.NewStaticCredentials("id", "secret", ""),
+	}))
+
+	uploader := s3manager.NewUploader(sess)
+
+	r := strings.NewReader("Hello, Reader 2!")
+
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String("jkalina-bucket-1"),
+		Key:    aws.String("testing-key"),
+		Body:   r,
+	})
+	if err != nil {
+		fmt.Printf("failed to upload file, %v", err)
 		return
 	}
-
-	block.SetString(os.Args[1], 10)
-	rpc1 = NewFtmBridge(os.Args[2])
-	defer rpc1.Close()
-
-	generateBalances()
+	fmt.Printf("file uploaded to, %s\n", aws.StringValue(&result.Location))
 }
